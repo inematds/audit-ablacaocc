@@ -330,8 +330,9 @@
 
   <div class="step"><div class="b">3</div><div>
     <h3>GitHub Pages</h3>
-    <p>Publique via GitHub Actions (o build legacy trava). Como o guia está em <code>guia/</code>, a URL pública termina em <code>/guia/</code>.</p>
-<pre><span class="k">gh api</span> -X POST repos/inematds/audit-ablacaocc/pages -f build_type=workflow
+    <p>Crie primeiro o <code>.github/workflows/pages.yml</code> (YAML completo no README) — o build legacy "deploy from a branch" trava. Como o guia está em <code>guia/</code>, a URL pública termina em <code>/guia/</code>.</p>
+<pre><span class="c"># com .github/workflows/pages.yml commitado:</span>
+<span class="k">gh api</span> -X POST repos/inematds/audit-ablacaocc/pages -f build_type=workflow
 <span class="k">gh api</span> repos/inematds/audit-ablacaocc/pages -q .html_url</pre>
   </div></div>
 

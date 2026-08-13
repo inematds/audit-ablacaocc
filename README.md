@@ -175,7 +175,8 @@ audit-ablacaocc/
 ├── README.md       # este arquivo
 ├── capa/capa.png   # capa 1280x720 (skill capa-inema)
 ├── guia/index.html # landing + guia self-contained (skill projetos-landing-guia)
-└── doc/            # material de base
+├── doc/            # material de base
+└── .github/workflows/pages.yml   # deploy do GitHub Pages via Actions
 ```
 
 Regra que evita retrabalho: **o guia vai em `guia/`, nunca na raiz** — a raiz é do código/skill. E é **uma página dentro do próprio repo**, nunca um repositório separado. Nome do repo remoto = nome da pasta local.
@@ -204,11 +205,36 @@ git push git@github.com:inematds/audit-ablacaocc.git main
 
 ### 8.3 GitHub Pages
 
-Servir da **raiz do branch `main`** (sem Actions — assim o problema de escopo `workflow` nem aparece):
+Publique **via GitHub Actions**, não pelo build legacy ("deploy from a branch"): a fila legacy trava, com builds presos em `building` por horas e o deploy retornando `Deployment failed, try again later`.
+
+Crie `.github/workflows/pages.yml` servindo da raiz (o guia continua em `/guia/`):
+
+```yaml
+name: Deploy static site to Pages
+on:
+  push: { branches: [main, master] }
+  workflow_dispatch:
+permissions: { contents: read, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: false }
+jobs:
+  deploy:
+    environment: { name: github-pages, url: "${{ steps.deployment.outputs.page_url }}" }
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: '.' }
+      - id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+Depois aponte o Pages para o Actions e acompanhe o run:
 
 ```bash
-gh api -X POST repos/inematds/audit-ablacaocc/pages \
-  -f 'source[branch]=main' -f 'source[path]=/'
+gh api -X POST repos/inematds/audit-ablacaocc/pages -f build_type=workflow \
+  || gh api -X PUT repos/inematds/audit-ablacaocc/pages -f build_type=workflow
+gh run watch <run-id> --repo inematds/audit-ablacaocc --exit-status
 ```
 
 Confirme antes de dizer que publicou:
@@ -217,7 +243,7 @@ Confirme antes de dizer que publicou:
 curl -sI https://inematds.github.io/audit-ablacaocc/guia/ | head -1   # espera 200
 ```
 
-A primeira publicação leva ~1 min. Como o guia está em `guia/`, a URL pública termina em `/guia/`.
+O primeiro run leva ~1 min. Como o guia está em `guia/`, a URL pública termina em `/guia/`.
 
 ### 8.4 Portal (inema.club)
 
