@@ -1,5 +1,7 @@
 # audit-ablacaocc — auditoria de ablação para Claude Code
 
+**🇧🇷 [Português](README.md) · 🇺🇸 [English](README.en.md) · 🇪🇸 [Español](README.es.md)**
+
 Skill de **diagnóstico** (somente leitura) que audita seu `CLAUDE.md`, suas skills e seus hooks, classifica cada instrução e propõe uma versão mínima — sem tocar em nenhum arquivo.
 
 > Toda linha da sua configuração é **culpada de complexidade até provar utilidade**.
